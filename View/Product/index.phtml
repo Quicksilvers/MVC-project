@@ -1,0 +1,93 @@
+<h2>Наши продукты</h2>
+<?php $currentPage  = $view->getParam('currentPage'); ?>
+<?php $limit        = $view->getParam('limit'); ?>
+<?php $orderType    = $view->getParam('orderType'); ?>
+<?php $orderBy      = $view->getParam('orderBy'); ?>
+<?php $products     = $view->getParam('products');
+      ?>
+<?php if(!empty($products)) :?> 
+    <table border="1px">
+        <th>
+            <?php if($orderType == 'asc') : ?>
+                <a href='index/page/<?php echo $currentPage;?>/limit/<?php echo $limit;?>/orderby/id/ordertype/desc'>Id<?php if($orderBy == 'id') :?>&darr;<?php endif; ?></a>
+            <?php else : ?>
+                <a href='index/page/<?php echo $currentPage;?>/limit/<?php echo $limit;?>/orderby/id/ordertype/asc'>Id<?php if($orderBy == 'id') :?>&uarr;<?php endif; ?></a>
+            <?php endif; ?>    
+        </th>
+
+        <th>
+            <?php if($orderType == 'asc') : ?>
+                <a href='index/page/<?php echo $currentPage;?>/limit/<?php echo $limit;?>/orderby/name/ordertype/desc'>Name<?php if($orderBy == 'name') :?>&darr;<?php endif; ?></a>
+            <?php else : ?>
+                <a href='index/page/<?php echo $currentPage;?>/limit/<?php echo $limit;?>/orderby/name/ordertype/asc'>Name<?php if($orderBy == 'name') :?>&uarr;<?php endif; ?></a>
+            <?php endif; ?>
+        </th>        
+        <th>Picture</th>    
+        <th>
+            <?php if($orderType == 'asc') : ?>
+                <a href='index/page/<?php echo $currentPage;?>/limit/<?php echo $limit;?>/orderby/price/ordertype/desc'>Price<?php if($orderBy == 'price') :?>&darr;<?php endif; ?></a>
+            <?php else : ?>
+                <a href='index/page/<?php echo $currentPage;?>/limit/<?php echo $limit;?>/orderby/price/ordertype/asc'>Price<?php if($orderBy == 'price') :?>&uarr;<?php endif; ?></a>
+            <?php endif; ?>
+        </th>    
+        <th>
+            <?php if($orderType == 'asc') : ?>
+                <a href='index/page/<?php echo $currentPage;?>/limit/<?php echo $limit;?>/orderby/total/ordertype/desc'>Total<?php if($orderBy == 'total') :?>&darr;<?php endif; ?></a>
+            <?php else : ?>
+                <a href='index/page/<?php echo $currentPage;?>/limit/<?php echo $limit;?>/orderby/total/ordertype/asc'>Total<?php if($orderBy == 'total') :?>&uarr;<?php endif; ?></a>
+            <?php endif; ?>
+        </th>    
+
+        <?php foreach($products as $product) : ?>
+            <?php /** @var Model_Product $product*/ ?>
+            <tr>
+                <td><?php echo $product->id;?></td>
+                <td><?php echo $product->name;?></td>
+                <td><?php echo $product->img;?></td>
+                <td><?php echo $product->price;?></td>
+                <td><?php echo $product->total;?></td>
+            </tr>
+        <?php endforeach; ?>
+    </table>
+
+    <?php $countPages = ceil($view->getParam('countProducts') / $limit); ?>
+    <?php 
+    $halfPages = floor($countPages / 2);
+    $range = array('start' => 1, 'end' => $countPages);
+    $isEven = ($countPages % 2 == 0);
+    $atRangeEnd = $countPages - $halfPages;
+    
+    if($isEven) $atRangeEnd++;
+    if($countPages > $limit)
+    {
+        if($currentPage <= $halfPages)
+        $range['end'] = $limit;
+        elseif ($currentPage >= $atRangeEnd)
+        $range['start'] = $countPages - $limit + 1;
+        else
+        {
+           $range['start'] = $currentPage - $halfPages;
+           $range['end'] = $currentPage + $halfPages;
+           if($isEven) $range['end']--;
+        }
+    }
+    ?>
+    <?php if(!($currentPage == 1)) : ?>
+        <a href="index/page/<?php echo 1 ;?>/limit/<?php echo $limit;?>/orderby/<?php echo $orderBy ?>/ordertype/<?php echo $orderType; ?>">First</a>&nbsp
+     <?php endif; ?> 
+    <?php if($currentPage > 1) : ?>
+	<a href="index/page/<?php echo $currentPage - 1 ;?>/limit/<?php echo $limit;?>/orderby/<?php echo $orderBy ?>/ordertype/<?php echo $orderType; ?>">&laquo;</a>&nbsp
+        <?php endif; ?> 
+    <?php for($i = $range['start']; $i <= $range['end']; $i++) : ?>
+        <?php if($i != $currentPage) : ?>
+            <a href="/product/index/page/<?php echo $i;?>/limit/<?php echo $limit;?>/orderby/<?php echo $orderBy ?>/ordertype/<?php echo $orderType; ?>"><?php echo $i;?></a>&nbsp&nbsp   
+            <?php else : ?>
+            <?php echo $i;?>&nbsp&nbsp
+        <?php endif;?>    
+    <?php endfor; ?>
+         <?php if($currentPage < $countPages) : ?>
+	<a href="index/page/<?php echo $i + 1 ;?>/limit/<?php echo $limit;?>/orderby/<?php echo $orderBy ?>/ordertype/<?php echo $orderType; ?>">&raquo;</a>&nbsp
+        <a href="index/page/<?php echo $countPages ;?>/limit/<?php echo $limit;?>/orderby/<?php echo $orderBy ?>/ordertype/<?php echo $orderType; ?>">Last</a>&nbsp
+            <?php endif; ?>
+
+<?php endif; ?>
